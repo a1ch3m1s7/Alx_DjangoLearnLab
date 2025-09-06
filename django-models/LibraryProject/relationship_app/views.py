@@ -11,7 +11,7 @@ def book_list(request):
     books = Book.objects.all()
     # Option 1: simple plain text response
     response = "\n".join([f"{book.title} by {book.author.name}" for book in books])
-    return render(request, "relationship_app/book_list.html", {"books": books})
+    return render(request, "relationship_app/list_books.html", {"books": books})
 
 class LibraryDetailView(DetailView):
     model = Library
