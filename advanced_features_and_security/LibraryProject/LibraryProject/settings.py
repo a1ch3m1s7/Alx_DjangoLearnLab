@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'relationship_app',
 ]
 
-AUTH_USER_MODEL = "relationship_app.CustomUser"
+AUTH_USER_MODEL = "bookshelf.CustomUser"
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "list_book"
