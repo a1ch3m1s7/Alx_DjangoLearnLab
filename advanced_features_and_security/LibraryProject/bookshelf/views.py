@@ -16,7 +16,7 @@ def create_book(request):
         author_id = request.POST.get("author")
         author = get_object_or_404(Author, id=author_id)
         Book.objects.create(title=title, author=author)
-        return redirect("view_books")
+        return redirect("book_list")
     return render(request, "bookshelf/create_book.html")
 
 
@@ -26,7 +26,7 @@ def edit_book(request, book_id):
     if request.method == "POST":
         book.title = request.POST.get("title")
         book.save()
-        return redirect("view_books")
+        return redirect("book_list")
     return render(request, "bookshelf/edit_book.html", {"book": book})
 
 
@@ -34,4 +34,4 @@ def edit_book(request, book_id):
 def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     book.delete()
-    return redirect("view_books")
+    return redirect("book_list")
