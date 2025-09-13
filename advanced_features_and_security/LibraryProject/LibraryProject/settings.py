@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookshelf',
-    'relationship_app',
 ]
 
 AUTH_USER_MODEL = "bookshelf.CustomUser"
@@ -46,7 +45,6 @@ AUTH_USER_MODEL = "bookshelf.CustomUser"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "list_book"
 LOGOUT_REDIRECT_URL = "login"
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
