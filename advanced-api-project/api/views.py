@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Author, Book
+from django_filters import rest_framework
 from .serializers import AuthorSerializer, BookSerializer
 from .filters import BookFilter, AuthorFilter
 from .utils import build_metadata
