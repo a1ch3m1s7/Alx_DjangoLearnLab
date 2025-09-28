@@ -1,7 +1,7 @@
 from django.db import models
 
 class Author(models.Model):
-     """
+    """
     Author model representing a book author.
     
     Fields:
@@ -13,13 +13,15 @@ class Author(models.Model):
     )
     
     def __str__(self):
+        """String representation of the Author model"""
         return self.name
     
     class Meta:
         ordering = ['name']
 
+
 class Book(models.Model):
-      """
+    """
     Book model representing a published book.
     
     Fields:
@@ -37,14 +39,16 @@ class Book(models.Model):
     )
     author = models.ForeignKey(
         Author,
-        on_delete=models.CASCADE,  
-        related_name='books',      
+        on_delete=models.CASCADE,  # If author is deleted, their books are also deleted
+        related_name='books',      # Allows reverse relation: author.books.all()
         help_text="The author who wrote this book"
     )
     
     def __str__(self):
+        """String representation of the Book model"""
         return f"{self.title} by {self.author.name}"
     
     class Meta:
         ordering = ['title']
+        # Ensure unique constraint: same title and author combination should be unique
         unique_together = ['title', 'author']
