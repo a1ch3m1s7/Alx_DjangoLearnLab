@@ -10,7 +10,7 @@ urlpatterns = [
     # Include router URLs
     # path('', include(router.urls)),
     
-    # Book URLs
+    # Book URLs - Fixed patterns
     path('books/', views.BookListView.as_view(), name='book-list'),
     path('books/<int:pk>/', views.BookDetailView.as_view(), name='book-detail'),
     path('books/create/', views.BookCreateView.as_view(), name='book-create'),
@@ -35,6 +35,7 @@ def api_root(request, format=None):
     return Response({
         'books': reverse('book-list', request=request, format=format),
         'authors': reverse('author-list', request=request, format=format),
+        'book_create': reverse('book-create', request=request, format=format),
     })
 
 urlpatterns += [
