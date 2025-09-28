@@ -173,3 +173,21 @@ class BookAPITestCase(APITestCase):
         stats = resp2.data['statistics']
         self.assertIn('total_books', stats)
         self.assertGreaterEqual(stats['total_books'], 2)
+
+    def test_login_with_client(self):
+        # Use Django's built-in login method to simulate authentication
+        login_successful = self.client.login(username="testuser", password="password123")
+        self.assertTrue(login_successful)
+
+        # After login, test access to an authenticated endpoint
+        url = reverse('book-create')
+        payload = {
+            "title": "Login Test Book",
+            "publication_year": 2024,
+            "author": self.author_orwell.id
+        }
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # logout after test
+        self.client.logout()
