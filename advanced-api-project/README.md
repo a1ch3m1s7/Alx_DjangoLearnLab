@@ -49,3 +49,32 @@ python manage.py test api
 
 # Start development server
 python manage.py runserver
+
+# Advanced Book API - Query Capabilities
+
+## Filtering, Searching, and Ordering Guide
+
+### Filtering Options
+
+Filter books using various criteria:
+
+#### Basic Filters
+```http
+GET /api/books/?title=harry
+GET /api/books/?author_name=rowling
+GET /api/books/?author_id=1
+GET /api/books/?publication_year=1997
+
+GET /api/books/?publication_year__gt=2000
+GET /api/books/?publication_year__lt=2010
+GET /api/books/?publication_year__gte=1990
+GET /api/books/?publication_year__lte=2000
+GET /api/books/?publication_year_range=1990&publication_year_range=2000
+
+GET /api/books/?search=harry
+GET /api/books/?search=rowling
+GET /api/books/?search=magic
+
+GET /api/books/?ordering=title
+GET /api/books/?ordering=-publication_year
+GET /api/books/?ordering=author__name,publication_year
