@@ -1,0 +1,24 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}{% if object %}Edit comment{% else %}Add comment{% endif %}{% endblock %}
+
+{% block content %}
+  <h2>{% if object %}Edit comment{% else %}Add comment{% endif %}</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      {{ form.content.errors }}
+      {{ form.content }}
+    </div>
+    <button type="submit">{% if object %}Save changes{% else %}Post comment{% endif %}</button>
+  </form>
+
+  {% if object %}
+    <p><a href="{% url 'post-detail' object.post.pk %}">Back to post</a></p>
+  {% else %}
+    <p><a href="{% url 'post-list' %}">Back to posts</a></p>
+  {% endif %}
+{% endblock %}
