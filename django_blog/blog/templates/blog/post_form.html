@@ -1,0 +1,30 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}
+  {% if view.action and view.action == 'update' %}Edit Post{% else %}New Post{% endif %}
+{% endblock %}
+
+{% block content %}
+  <h2>{% if object %}Edit Post{% else %}Create New Post{% endif %}</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      <label>Title</label><br>
+      {{ form.title.errors }}
+      {{ form.title }}
+    </div>
+
+    <div>
+      <label>Content</label><br>
+      {{ form.content.errors }}
+      {{ form.content }}
+    </div>
+
+    <button type="submit">{% if object %}Save changes{% else %}Publish{% endif %}</button>
+  </form>
+
+  <p><a href="{% url 'post-list' %}">Back to posts</a></p>
+{% endblock %}

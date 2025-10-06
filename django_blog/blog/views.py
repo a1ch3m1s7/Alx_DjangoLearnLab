@@ -1,9 +1,13 @@
-from django.shortcuts import render, redirect
-from django.contrib import messages
+# blog/views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegistrationForm, ProfileForm
-from .models import Post
+from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+from .models import Post
+from .forms import PostForm
 from datetime import datetime
 
 def home(request):
@@ -61,3 +65,54 @@ def profile(request):
         'year': datetime.now().year,
     }
     return render(request, 'blog/profile.html', context)
+
+# Optional: existing home view can remain; we'll add class-based ListView for /posts/
+class PostListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'  # new template
+    context_object_name = 'posts'
+    ordering = ['-published_date']
+    paginate_by = 10  # optional
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'blog/post_detail.html'  # new template
+    context_object_name = 'post'
+
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_form.html'
+    # fields are taken from PostForm
+    def form_valid(self, form):
+        # Automatically set the author & published_date if needed
+        form.instance.author = self.request.user
+        # If you want to set published_date on create, use auto_now_add in model already
+        return super().form_valid(form)
+
+class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_form.html'
+
+    def form_valid(self, form):
+        # Ensure the author isn't changed and remains the same
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
+
+class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Post
+    template_name = 'blog/post_confirm_delete.html'
+    success_url = reverse_lazy('post-list')
+
+    def test_func(self):
+        post = self.get_object()
+        return self.request.user == post.author
+
+# For template footer year context if you want consistent context
+def site_year(request):
+    return {'year': datetime.now().year}

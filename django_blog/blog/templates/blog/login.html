@@ -1,5 +1,5 @@
-{% load static %}
 {% extends 'blog/base.html' %}
+{% load static %}
 
 {% block title %}Login - Django Blog{% endblock %}
 
@@ -7,7 +7,9 @@
 <h2>Log in</h2>
 
 {% if form.errors %}
-  <p class="error">Please correct the error{{ form.errors|length > 1|yesno:"s," }} below.</p>
+  <p class="error">
+    Please correct the error{{ form.errors|length|pluralize }} below.
+  </p>
 {% endif %}
 
 <form method="post">
