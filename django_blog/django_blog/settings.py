@@ -34,6 +34,10 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
+# Authentication redirects
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 # Application definition
 
@@ -58,6 +62,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'django_blog.urls'
+
+
 
 TEMPLATES = [
     {

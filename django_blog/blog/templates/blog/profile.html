@@ -1,0 +1,49 @@
+{% load static %}
+{% extends 'blog/base.html' %}
+
+{% block title %}Profile - Django Blog{% endblock %}
+
+{% block content %}
+<h2>Your Profile</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ profile_form.non_field_errors }}
+
+    <div>
+        <label>Username</label><br>
+        <input type="text" value="{{ request.user.username }}" disabled>
+    </div>
+
+    <div>
+        <label>Email</label><br>
+        <input type="email" name="email" value="{{ request.user.email }}">
+    </div>
+
+    <div>
+        <label>First name</label><br>
+        <input type="text" name="first_name" value="{{ request.user.first_name }}">
+    </div>
+
+    <div>
+        <label>Last name</label><br>
+        <input type="text" name="last_name" value="{{ request.user.last_name }}">
+    </div>
+
+    <div>
+        <label>Bio</label><br>
+        {{ profile_form.bio }}
+    </div>
+
+    <div>
+        <label>Profile picture</label><br>
+        {% if request.user.profile.profile_picture %}
+            <img src="{{ request.user.profile.profile_picture.url }}" alt="profile" style="max-width:150px;"><br>
+            <small>Upload a new file to replace.</small><br>
+        {% endif %}
+        {{ profile_form.profile_picture }}
+    </div>
+
+    <button type="submit">Save changes</button>
+</form>
+{% endblock %}
