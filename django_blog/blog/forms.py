@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Profile, Post, Comment
+from .models import Profile, Post, Comment, Tag
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True, help_text='Required. Enter a valid email address.')
@@ -24,13 +24,24 @@ class ProfileForm(forms.ModelForm):
         fields = ['bio', 'profile_picture']
 
 class PostForm(forms.ModelForm):
+    tags = forms.CharField(required=False, help_text="Separate tags with commas")
+
     class Meta:
         model = Post
-        fields = ['title', 'content']
-        widgets = {
-            'title': forms.TextInput(attrs={'placeholder': 'Post title', 'class': 'form-control'}),
-            'content': forms.Textarea(attrs={'placeholder': 'Write your post here...', 'class': 'form-control', 'rows': 10}),
-        }
+        fields = ['title', 'content', 'tags']
+
+    def save(self, commit=True, *args, **kwargs):
+        instance = super().save(commit=False)
+        if commit:
+            instance.save()
+            # handle tags
+            tag_names = [t.strip() for t in self.cleaned_data['tags'].split(',') if t.strip()]
+            tags = []
+            for name in tag_names:
+                tag, created = Tag.objects.get_or_create(name=name)
+                tags.append(tag)
+            instance.tags.set(tags)
+        return instance
 
 class CommentForm(forms.ModelForm):
     class Meta:

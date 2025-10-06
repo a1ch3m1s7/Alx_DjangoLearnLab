@@ -1,13 +1,14 @@
 # blog/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from .forms import PostForm, CommentForm, ProfileForm
 from datetime import datetime
 
@@ -67,6 +68,23 @@ def profile(request):
     }
     return render(request, 'blog/profile.html', context)
 
+
+def search(request):
+    query = request.GET.get("q")
+    posts = Post.objects.all()
+    if query:
+        posts = posts.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    return render(request, "blog/search_results.html", {"posts": posts, "query": query})
+
+def posts_by_tag(request, tag_name):
+    tag = get_object_or_404(Tag, name=tag_name)
+    posts = tag.posts.all()
+    return render(request, "blog/posts_by_tag.html", {"tag": tag, "posts": posts})
+
 # Optional: existing home view can remain; we'll add class-based ListView for /posts/
 class PostListView(ListView):
     model = Post
@@ -122,29 +140,27 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         post = self.get_object()
         return self.request.user == post.author
 
-# For template footer year context.
-def site_year(request):
-    return {'year': datetime.now().year}
-
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment_form.html'
 
     def dispatch(self, request, *args, **kwargs):
-        # fetch the post the comment belongs to
-        self.post = get_object_or_404(Post, pk=kwargs.get('pk'))
+        # Fetch the related post for the comment
+        self.post_obj = get_object_or_404(Post, pk=kwargs.get('pk'))
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
+        # Attach the logged-in user and post to the comment
         form.instance.author = self.request.user
-        form.instance.post = self.post
+        form.instance.post = self.post_obj
         response = super().form_valid(form)
         messages.success(self.request, "Your comment has been posted.")
         return response
 
     def get_success_url(self):
-        return reverse('post-detail', kwargs={'pk': self.post.pk})
+        # Redirect back to the post detail page
+        return reverse('post-detail', kwargs={'pk': self.post_obj.id})
 
 # --- Comment update & delete (author-only) ---
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -173,3 +189,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         comment = self.get_object()
         return self.request.user == comment.author
+
+# For template footer year context.
+def site_year(request):
+    return {'year': datetime.now().year}

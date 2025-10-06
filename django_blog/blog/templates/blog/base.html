@@ -2,45 +2,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Django Blog{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'blog/style.css' %}">
     <script src="{% static 'blog/script.js' %}" defer></script>
 </head>
 <body>
-<header>
-    <nav>
-      ...
-      <ul>
-        <li><a href="{% url 'home' %}">Home</a></li>
-        <li><a href="{% url 'post-list' %}">Posts</a></li>
-        {% if user.is_authenticated %}
-          <li><a href="{% url 'post-create' %}">New Post</a></li>
-          <li><a href="{% url 'profile' %}">Profile</a></li>
-          <li><a href="{% url 'logout' %}">Logout</a></li>
-        {% else %}
-          <li><a href="{% url 'login' %}">Login</a></li>
-          <li><a href="{% url 'register' %}">Register</a></li>
+    <header>
+        <nav class="navbar">
+            <a href="{% url 'home' %}" class="nav-brand">Django Blog</a>
+            <ul class="nav-links">
+                <li><a href="{% url 'post-list' %}">All Posts</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'post-create' %}">New Post</a></li>
+                    <li><a href="{% url 'profile' %}">Profile</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'register' %}">Register</a></li>
+                {% endif %}
+            </ul>
+
+            <!-- Search form -->
+            <form method="get" action="{% url 'search' %}" class="search-form">
+                <input type="text" name="q" placeholder="Search posts..." value="{{ request.GET.q|default:'' }}">
+                <button type="submit">Search</button>
+            </form>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
         {% endif %}
-        <li><a href="/admin/">Admin</a></li>
-      </ul>
-    </nav>
-</header>
 
-<main>
-  {% if messages %}
-    <ul class="messages">
-      {% for message in messages %}
-        <li class="message {{ message.tags }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+        {% block content %}{% endblock %}
+    </main>
 
-  {% block content %}{% endblock %}
-</main>
-
-<footer>
-  <p>&copy; {{ year }} Django Blog</p>
-</footer>
+    <footer>
+        <p>&copy; {{ year }} Django Blog. All rights reserved.</p>
+    </footer>
 </body>
 </html>
