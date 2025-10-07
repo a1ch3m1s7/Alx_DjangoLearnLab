@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from taggit.managers import TaggableManager
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -15,7 +16,7 @@ class Post(models.Model):
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
+    tags = TaggableManager()
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
