@@ -69,16 +69,19 @@ def profile(request):
     return render(request, 'blog/profile.html', context)
 
 
-def search(request):
+def search_posts(request):
     query = request.GET.get("q")
-    posts = Post.objects.all()
+    # posts = Post.objects.all()
+    results = Post.objects.none()
+
     if query:
-        posts = posts.filter(
+        results = posts.objects.filter(
             Q(title__icontains=query) |
             Q(content__icontains=query) |
             Q(tags__name__icontains=query)
         ).distinct()
-    return render(request, "blog/search_results.html", {"posts": posts, "query": query})
+
+    return render(request, "blog/search_results.html", {"results": posts, "query": query})
 
 def posts_by_tag(request, tag_name):
     tag = get_object_or_404(Tag, name=tag_name)
