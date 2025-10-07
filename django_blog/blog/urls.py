@@ -20,6 +20,9 @@ urlpatterns = [
 
     path('search/', views.search, name='search'),
     path('tags/<str:tag_name>/', views.posts_by_tag, name='posts-by-tag'),
+    
+     # tags
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts-by-tag'),
 
     # authentication
     path('register/', views.register, name='register'),
