@@ -50,3 +50,20 @@ python manage.py runserver
     }
   ]
 }
+
+## Follow & Feed
+
+### Follow a user
+POST `/api/accounts/follow/<user_id>/` (auth required)
+Response contains follower/following counts.
+
+### Unfollow a user
+POST `/api/accounts/unfollow/<user_id>/` (auth required)
+
+### Feed
+GET `/api/feed/` (auth required)
+Returns paginated posts from users you follow, ordered by newest first.
+Query params:
+ - `page` — page number
+ - `page_size` — optional per-page (if allowed)
+ - `search` — search post title/content
