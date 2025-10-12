@@ -33,33 +33,35 @@ class ProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
         
-class FollowUserView(APIView):
+class FollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         if request.user.id == user_id:
             return Response({'detail': "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
-        target = get_object_or_404(User, id=user_id)
-        request.user.following.add(target)
+        target_user = get_object_or_404(User, id=user_id)
+        request.user.following.add(target_user)
+
         return Response({
-            'detail': f'You are now following {target.username}',
+            'detail': f'You are now following {target_user.username}',
             'following_count': request.user.following.count(),
-            'target_followers_count': target.followers.count()
+            'target_followers_count': target_user.followers.count()
         }, status=status.HTTP_200_OK)
 
 
-class UnfollowUserView(APIView):
+class UnfollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         if request.user.id == user_id:
             return Response({'detail': "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
-        target = get_object_or_404(User, id=user_id)
-        request.user.following.remove(target)
+        target_user = get_object_or_404(User, id=user_id)
+        request.user.following.remove(target_user)
+
         return Response({
-            'detail': f'You unfollowed {target.username}',
+            'detail': f'You unfollowed {target_user.username}',
             'following_count': request.user.following.count(),
-            'target_followers_count': target.followers.count()
+            'target_followers_count': target_user.followers.count()
         }, status=status.HTTP_200_OK)
